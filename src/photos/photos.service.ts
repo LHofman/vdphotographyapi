@@ -1,15 +1,21 @@
 import { Injectable } from '@nestjs/common'
+
 import { Photo } from './interfaces/photo.interface';
+import FileModel from "./schemas/file.schema";
 import PhotoModel from "./schemas/photo.schema";
 
 @Injectable()
 export class PhotosService {
     async findAll(): Promise<Photo[]> {
-        return await PhotoModel.run();
+        return await PhotoModel.getJoin({image: true}).run();
     }
 
     async findById(id: String): Promise<Photo> {
         return await PhotoModel.get(id).run().error(this.handleError);
+    }
+
+    async uploadPhoto(file: Buffer): Promise<File> {
+        return await new FileModel({file}).save().error(this.handleError);
     }
 
     async create(photo: Photo): Promise<Photo> {
